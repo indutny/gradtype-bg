@@ -5,12 +5,16 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "webpack -w -d",
+    "build": "webpack -p"
   },
   "keywords": [],
   "author": "Fedor Indutny <fedor@indutny.com>",
   "license": "MIT",
   "devDependencies": {
-    "esm": "^3.2.22"
+    "copy-webpack-plugin": "^5.0.3",
+    "esm": "^3.2.22",
+    "webpack": "^4.31.0",
+    "webpack-cli": "^3.3.2"
   }
 }
