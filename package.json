@@ -1,0 +1,16 @@
+{
+  "name": "gradtype-bg",
+  "version": "1.0.0",
+  "description": "gradtype battleground",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Fedor Indutny <fedor@indutny.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "esm": "^3.2.22"
+  }
+}
