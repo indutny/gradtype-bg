@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "watch": "webpack -w -d",
-    "build": "webpack -p"
+    "build": "webpack -p",
+    "now-build": "npm run build"
   },
   "keywords": [],
   "author": "Fedor Indutny <fedor@indutny.com>",

@@ -37,9 +37,15 @@ class App {
     }
     pass /= INDUTNY.length;
 
-    this.pass.textContent =
-      `You are ${pass < 0.5 ? 'not ' : ''}"indutny" with confidence: ` +
-      (pass * 100).toFixed(1);
+    let text;
+    if (pass < 0.5) {
+      text = 'You are not "indutny" with confidence:' +
+        ((1 - pass) * 100).toFixed(1);
+    } else {
+      text = 'You are "indutny" with confidence:' +
+        (pass * 100).toFixed(1);
+    }
+    this.pass.textContent = text;
   }
 }
 
