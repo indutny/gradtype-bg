@@ -18,7 +18,13 @@ class App {
     this.pass.classList.add('pass');
     this.elem.appendChild(this.pass);
 
+    this.info = document.createElement('section');
+    this.info.classList.add('info');
+    this.elem.appendChild(this.info);
+
     this.typist.onFlush = (sentence, log) => this.onLog(sentence, log);
+
+    this.total = 0;
 
     this.typist.start();
   }
@@ -46,6 +52,9 @@ class App {
         (pass * 100).toFixed(1);
     }
     this.pass.textContent = text;
+
+    this.total++;
+    this.info.textContent = 'Total sentences typed: ' + this.total;
   }
 }
 
