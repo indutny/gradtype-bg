@@ -5,6 +5,9 @@ import Model from './model';
 import Typist from './typist';
 import { distance, filter } from './utils';
 
+const CUTOFF = 1.7154806850871354;
+const NEIGHBORS = 20;
+
 class App {
   constructor() {
     this.model = new Model(WEIGHTS);
@@ -35,21 +38,28 @@ class App {
 
     console.log(JSON.stringify(features));
 
-    let pass = 0;
+    let distances = [];
     for (const sample of INDUTNY) {
-      if (distance(features, sample) < 1.7154806850871354) {
-        pass++;
-      }
+      distances.push(distance(features, sample));
     }
-    pass /= INDUTNY.length;
+
+    distances.sort();
+    distances = distances.slice(0, NEIGHBORS);
+
+    let mean = 0;
+    for (const d of distances) {
+      mean += d;
+    }
+    mean /= distances.length;
+    mean /= CUTOFF;
 
     let text;
-    if (pass < 0.5) {
-      text = 'You are not "indutny" with confidence:' +
-        ((1 - pass) * 100).toFixed(1);
+    if (mean > 1) {
+      text = 'You are not "indutny" with distance: ' +
+        mean.toFixed(3);
     } else {
-      text = 'You are "indutny" with confidence:' +
-        (pass * 100).toFixed(1);
+      text = 'You are "indutny" with distance:' +
+        mean.toFixed(3);
     }
     this.pass.textContent = text;
 
