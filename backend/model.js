@@ -208,8 +208,8 @@ class Model {
       distances.push(distance(features, sample));
     }
 
-    distances.sort();
-    distances = distances.slice(0, NEIGHBORS);
+    // distances.sort();
+    // distances = distances.slice(0, NEIGHBORS);
 
     let mean = 0;
     for (const d of distances) {
