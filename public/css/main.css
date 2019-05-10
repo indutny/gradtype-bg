@@ -1,12 +1,13 @@
-* {
-  font-family: Helvetica;
-}
-
 body {
   text-align: center;
 }
 
-.typist {
+#app {
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+#typist {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;

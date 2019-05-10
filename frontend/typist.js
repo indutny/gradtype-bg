@@ -8,8 +8,8 @@ const SENTENCES = RAW_SENTENCES.map((sentence) => {
 });
 
 export default class Typist {
-  constructor() {
-    this.elem = document.createElement('div');
+  constructor(elem) {
+    this.elem = elem || document.createElement('div');
     this.complete = document.createElement('span');
     this.pending = document.createElement('span');
 
@@ -22,11 +22,19 @@ export default class Typist {
 
     this.listeners = {
       keydown: (e) => {
+        if (e.metaKey || e.altKey || e.ctrlKey) {
+          return;
+        }
+
         this.onKeyDown(e.key);
         e.preventDefault();
         return false;
       },
       keyup: (e) => {
+        if (e.metaKey || e.altKey || e.ctrlKey) {
+          return;
+        }
+
         this.onKeyUp(e.key);
         e.preventDefault();
         return false;

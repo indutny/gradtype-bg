@@ -8,29 +8,36 @@ import { filter } from './utils';
 class App {
   constructor() {
     this.api = new API();
-    this.typist = new Typist();
+    this.typist = new Typist(document.getElementById('typist'));
 
-    this.elem = document.createElement('section');
-    this.elem.classList.add('app');
-    this.elem.appendChild(this.typist.elem);
+    this.elem = document.getElementById('app');
 
-    this.result = document.createElement('section');
-    this.result.classList.add('result');
-    this.elem.appendChild(this.result);
+    this.result = document.getElementById('info-result');
+    this.stats = document.getElementById('info-stats');
 
-    this.info = document.createElement('section');
-    this.info.classList.add('info');
-    this.elem.appendChild(this.info);
+    this.login = document.getElementById('login');
+    this.logout = document.getElementById('logout');
 
-    this.login = document.createElement('button');
-    this.login.textContent = 'Log In';
     this.login.addEventListener('click', (e) => {
       e.preventDefault();
 
       this.api.auth().then(() => {
+        this.login.disabled = true;
+        this.logout.disabled = false;
       });
     });
-    this.elem.appendChild(this.login);
+    this.logout.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      this.api.logout().then(() => {
+        this.login.disabled = false;
+        this.logout.disabled = true;
+      });
+    });
+
+    this.api.getUser().then((user) => {
+      console.log(user);
+    });
 
     this.typist.onFlush = (sentence, log) => {
       this.onLog(sentence, log).catch((e) => {
@@ -45,7 +52,7 @@ class App {
     const events = filter(sentence, log);
 
     const res = await this.api.sendFeatures(events);
-    this.info.textContent = 'Total sentences typed: ' + res.featureCount;
+    this.stats.textContent = 'Total sentences typed: ' + res.featureCount;
 
     let text;
     if (res.results.length < 0) {
@@ -63,4 +70,3 @@ class App {
 }
 
 const app = new App();
-document.body.appendChild(app.elem);

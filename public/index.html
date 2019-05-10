@@ -3,11 +3,56 @@
   <head>
     <meta charset="utf-8"/>
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="css/main.css"/>
 
     <title>GradType BatlleGround</title>
   </head>
   <body>
+    <section id=app>
+      <h1>GradType</h1>
+
+      <p>
+        We have trained a neural network to identify the users by their
+        manner of typing on keyboard. The recurrent neural network learned
+        to recognize small timing difference between keypresses to successfully
+        identify the "typer" given 30-40 previously seen sentences.
+      </p>
+
+      <p>
+        Type few sentences below to play with it or log in with GitHub to
+        store your identifiers for extensive testing (and further improvement
+        of the network).
+      </p>
+
+      <section class="auth">
+        <button class="btn btn-primary" id="login">Log In</button>
+        <button class="btn btn-danger" id="logout" disabled>Log Out</button>
+      </section>
+
+      <section id=typist class="p-5">
+      </section>
+
+      <section id=info>
+        <section id=info-stats></section>
+        <section id=info-result></section>
+      </section>
+
+      <h3>Disclaimer:</h3>
+
+      <p>
+        <i>
+          This application collects the input and GitHub identifier for
+          research and improvement purposes. By submitting your data
+          <b>after</b> logging in you are agreeing to let us use the data
+          for training
+          <a href="https://github.com/indutny/gradtype" target="_blank">
+            this Open Source project
+          </a>.
+        </i>
+      </p>
+    </section>
+
     <script src="bundle.js"></script>
   </body>
 </html>

@@ -68,10 +68,6 @@ async function user(req, res) {
 }
 
 async function features(req, res) {
-  if (!req.user) {
-    return send(res, 401, { error: 'not authorized', auth: false });
-  }
-
   const body = await json(req);
   if (!body || !Array.isArray(body.events)) {
     return send(res, 400, { error: 'missing events array' });
@@ -85,9 +81,11 @@ async function features(req, res) {
   }
 
   const [ info, results ] = await Promise.all([
-    db.addFeatures(req.user, features, body.events),
+    req.user ? db.addFeatures(req.user, features, body.events) :
+      Promise.resolve({}),
     db.searchFeatures(features),
   ]);
+
   return Object.assign({}, info, { results });
 }
 

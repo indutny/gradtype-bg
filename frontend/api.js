@@ -2,7 +2,7 @@ const HOST = 'https://gradtype.darksi.de/api';
 
 export default class API {
   constructor() {
-    this.token = null;
+    this.token = localStorage.getItem('auth:token');
   }
 
   async request(method, uri, data) {
@@ -50,19 +50,22 @@ export default class API {
     });
 
     this.token = token;
+    localStorage.setItem('auth:token', token);
+  }
+
+  async logout() {
+    this.token = null;
+    localStorage.removeItem('auth:token');
   }
 
   async getUser() {
-    await this.auth();
     return await this.request('GET', '/user');
   }
 
   async sendFeatures(events) {
-    await this.auth();
     const res = await this.request('PUT', '/features', { events });
-    if (res.error && res.auth === false) {
-      this.token = null;
-      return await this.sendFeatures(events);
+    if (res.error) {
+      throw new Error(res.error);
     }
     return res;
   }
