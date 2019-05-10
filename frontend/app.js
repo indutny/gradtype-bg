@@ -13,7 +13,6 @@ class App {
     this.elem = document.getElementById('app');
 
     this.result = document.getElementById('info-result');
-    this.stars = document.getElementById('info-stars');
     this.stats = document.getElementById('info-stats');
 
     this.login = document.getElementById('login');
@@ -61,8 +60,8 @@ class App {
       const stars = Math.min(5, Math.round((res.featureCount / 60) * 5));
       const missing = 5 - stars;
 
-      this.stars.textContent = '⭐️'.repeat(stars) + '🔹'.repeat(missing);
-      this.stats.textContent = 'Sentences stored: ' + res.featureCount;
+      this.stats.textContent = 'Sentences stored: ' + res.featureCount +
+        ', Rating: ' + '⭐️'.repeat(stars) + '🔹'.repeat(missing);
     } else {
       this.stars.textContent = '';
       this.stats.textContent = '';
@@ -77,7 +76,7 @@ class App {
     this.result.textContent = '';
     for (const result of res.results) {
       const p = document.createElement('p');
-      p.textContent = `"${result.user.id}" - ${result.distance}`;
+      p.textContent = `"${result.user.id}" - distance ${result.distance}`;
       this.result.appendChild(p);
     }
   }
