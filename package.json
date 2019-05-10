@@ -7,7 +7,7 @@
   "scripts": {
     "watch": "webpack -w -d",
     "build": "webpack -p",
-    "start": "micro -l tcp://0.0.0.0:8000 backend/server.js"
+    "start": "micro -l tcp://127.0.0.1:8000 backend/server.js"
   },
   "keywords": [],
   "author": "Fedor Indutny <fedor@indutny.com>",
