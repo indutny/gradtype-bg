@@ -52,7 +52,7 @@ exports.fetchUser = async (token) => {
   if (!id) {
     return undefined;
   }
-  const json = await redis.getAsync('gradtype:user:' + id);
+  const json = await redis.hgetAsync('gradtype:user', id);
   return JSON.parse(json);
 };
 
@@ -88,7 +88,7 @@ exports.searchFeatures = async (features) => {
 
     const distance = model.computeDistance(features, storedFeatures);
     if (distance < 1) {
-      const json = await redis.getAsync('gradtype:user:' + userId);
+      const json = await redis.hgetAsync('gradtype:user', userId);
       const user = JSON.parse(json);
       matches.push({ distance, user });
     }
