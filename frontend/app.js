@@ -57,7 +57,7 @@ class App {
 
     const res = await this.api.sendFeatures(events);
     if (res.featureCount !== undefined) {
-      const stars = Math.min(5, Math.round((res.featureCount / 60) * 5));
+      const stars = Math.min(5, Math.floor((res.featureCount / 60) * 5));
       const missing = 5 - stars;
 
       this.stats.textContent = 'Sentences stored: ' + res.featureCount +
