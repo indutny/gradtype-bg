@@ -20,13 +20,14 @@ async function authGithub(req, res) {
   }
 }
 
-async function authGithubCallback(req, res) {
-  const code = req.query.code;
-  if (!code) {
-    return send(res, 400, { error: 'missing `code` in query' });
+async function putAuthGithub(req, res) {
+  const body = await json(req);
+  if (!body || !body.code || !body.state) {
+    return send(res, 400, { error: 'missing `code` and `state` in body' });
   }
 
-  const state = req.query.state;
+  const code = body.code.toString();
+  const state = body.state.toString();
   if (!db.checkNonce(state)) {
     return send(res, 400, { error: 'invalid nonce' });
   }
@@ -92,7 +93,7 @@ async function features(req, res) {
 
 module.exports = router(
   get('/auth/github', authGithub),
-  get('/auth/github/callback', authGithubCallback),
+  put('/auth/github', putAuthGithub),
   get('/user', user),
   put('/features', features),
 );

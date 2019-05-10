@@ -44,8 +44,10 @@ export default class API {
       window.addEventListener('message', onMessage);
     });
 
-    const { token } = await this.request('GET', '/auth/github/callback?' +
-      `code=${code}&state=${state}`);
+    const { token } = await this.request('PUT', '/auth/github', {
+      code,
+      state,
+    });
 
     this.token = token;
   }
