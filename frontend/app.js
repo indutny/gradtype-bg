@@ -13,6 +13,7 @@ class App {
     this.elem = document.getElementById('app');
 
     this.result = document.getElementById('info-result');
+    this.stars = document.getElementById('info-stars');
     this.stats = document.getElementById('info-stats');
 
     this.login = document.getElementById('login');
@@ -52,10 +53,18 @@ class App {
   async onLog(sentence, log) {
     const events = filter(sentence, log);
 
+    this.stats.textContent = 'Submitting...';
+    this.result.textContent = '...';
+
     const res = await this.api.sendFeatures(events);
     if (res.featureCount !== undefined) {
-      this.stats.textContent = 'Total sentences typed: ' + res.featureCount;
+      const stars = Math.min(5, Math.round((res.featureCount / 60) * 5));
+      const missing = 5 - stars;
+
+      this.stars.textContent = '⭐️'.repeat(stars) + '🔹'.fill(missing);
+      this.stats.textContent = 'Sentences stored: ' + res.featureCount;
     } else {
+      this.stars.textContent = '';
       this.stats.textContent = '';
     }
 
