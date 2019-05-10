@@ -1,7 +1,6 @@
 'use strict';
 
 const { send } = require('micro');
-const { promisify } = require('util');
 
 const debug = require('debug')('gradtype:server');
 

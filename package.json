@@ -7,7 +7,6 @@
   "scripts": {
     "watch": "webpack -w -d",
     "build": "webpack -p",
-    "now-build": "npm run build",
     "start": "micro -l tcp://0.0.0.0:8000 backend/server.js"
   },
   "keywords": [],
