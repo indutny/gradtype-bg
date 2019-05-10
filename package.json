@@ -7,7 +7,8 @@
   "scripts": {
     "watch": "webpack -w -d",
     "build": "webpack -p",
-    "now-build": "npm run build"
+    "now-build": "npm run build",
+    "start": "micro -l tcp://0.0.0.0:8000 backend/server.js"
   },
   "keywords": [],
   "author": "Fedor Indutny <fedor@indutny.com>",
@@ -19,12 +20,9 @@
     "webpack-cli": "^3.3.2"
   },
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "cookie-parser": "^1.4.4",
-    "express": "^4.16.4",
-    "express-session": "^1.16.1",
-    "passport": "^0.4.0",
-    "passport-github": "^1.1.0",
-    "serve-static": "^1.14.0"
+    "axios": "^0.18.0",
+    "debug": "^4.1.1",
+    "micro": "^9.3.4",
+    "microrouter": "^3.1.3"
   }
 }
