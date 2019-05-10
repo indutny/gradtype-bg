@@ -74,6 +74,9 @@ class App {
     }
 
     this.result.textContent = '';
+    const heading = document.createElement('h6');
+    heading.textContent = 'Results:';
+    this.result.appendChild(heading);
     for (const result of res.results) {
       const p = document.createElement('p');
       p.textContent = `"${result.user.id}" - distance ${result.distance}`;
