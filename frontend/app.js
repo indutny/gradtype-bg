@@ -61,7 +61,7 @@ class App {
       const stars = Math.min(5, Math.round((res.featureCount / 60) * 5));
       const missing = 5 - stars;
 
-      this.stars.textContent = '⭐️'.repeat(stars) + '🔹'.fill(missing);
+      this.stars.textContent = '⭐️'.repeat(stars) + '🔹'.repeat(missing);
       this.stats.textContent = 'Sentences stored: ' + res.featureCount;
     } else {
       this.stars.textContent = '';
