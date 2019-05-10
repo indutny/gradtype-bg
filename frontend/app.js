@@ -63,7 +63,6 @@ class App {
       this.stats.textContent = 'Sentences stored: ' + res.featureCount +
         ', Rating: ' + '⭐️'.repeat(stars) + '🔹'.repeat(missing);
     } else {
-      this.stars.textContent = '';
       this.stats.textContent = '';
     }
 
