@@ -14,10 +14,15 @@ export default class API {
       },
       body: data ? JSON.stringify(data) : undefined,
     })
+
     return await res.json();
   }
 
   async auth() {
+    if (this.token) {
+      return;
+    }
+
     const { url } = await this.request('GET', '/auth/github');
 
     const child = window.open(url,
@@ -43,6 +48,20 @@ export default class API {
       `code=${code}&state=${state}`);
 
     this.token = token;
-    console.log(token);
+  }
+
+  async getUser() {
+    await this.auth();
+    return await this.request('GET', '/user');
+  }
+
+  async sendFeatures(events) {
+    await this.auth();
+    const res = await this.request('PUT', '/features', { events });
+    if (res.error && res.auth === false) {
+      this.token = null;
+      return await this.sendFeatures(events);
+    }
+    return res;
   }
 }

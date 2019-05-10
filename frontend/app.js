@@ -14,9 +14,9 @@ class App {
     this.elem.classList.add('app');
     this.elem.appendChild(this.typist.elem);
 
-    this.pass = document.createElement('section');
-    this.pass.classList.add('pass');
-    this.elem.appendChild(this.pass);
+    this.result = document.createElement('section');
+    this.result.classList.add('result');
+    this.elem.appendChild(this.result);
 
     this.info = document.createElement('section');
     this.info.classList.add('info');
@@ -27,7 +27,8 @@ class App {
     this.login.addEventListener('click', (e) => {
       e.preventDefault();
 
-      this.api.auth();
+      this.api.auth().then(() => {
+      });
     });
     this.elem.appendChild(this.login);
 
@@ -37,29 +38,27 @@ class App {
       });
     };
 
-    this.total = 0;
-
     this.typist.start();
   }
 
   async onLog(sentence, log) {
     const events = filter(sentence, log);
 
-    const res = await fetch({
-    });
+    const res = await this.api.sendFeatures(events);
+    this.info.textContent = 'Total sentences typed: ' + res.featureCount;
 
     let text;
-    if (mean > 1) {
-      text = 'You are not "indutny" with distance: ' +
-        mean.toFixed(3);
-    } else {
-      text = 'You are "indutny" with distance:' +
-        mean.toFixed(3);
+    if (res.results.length < 0) {
+      this.result.textContent = 'No users found';
+      return;
     }
-    this.pass.textContent = text;
 
-    this.total++;
-    this.info.textContent = 'Total sentences typed: ' + this.total;
+    this.result.textContent = '';
+    for (const result of res.results) {
+      const p = document.createElement('p');
+      p.textContent = `"${result.user.id}" - ${result.distance}`;
+      this.result.appendChild(p);
+    }
   }
 }
 

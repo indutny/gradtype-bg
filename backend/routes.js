@@ -68,7 +68,7 @@ async function user(req, res) {
 
 async function features(req, res) {
   if (!req.user) {
-    return send(res, 401, { error: 'not authorized' });
+    return send(res, 401, { error: 'not authorized', auth: false });
   }
 
   const body = await json(req);
@@ -83,11 +83,11 @@ async function features(req, res) {
     return send(res, 400, { error: 'invalid events array' });
   }
 
-  const [ info, results ] = await Promise.all(
+  const [ info, results ] = await Promise.all([
     db.addFeatures(req.user, features, body.events),
     db.searchFeatures(features),
-  );
-  return Object.extend({}, info, { results });
+  ]);
+  return Object.assign({}, info, { results });
 }
 
 module.exports = router(
