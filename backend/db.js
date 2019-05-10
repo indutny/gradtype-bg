@@ -105,10 +105,13 @@ exports.dumpFeatures = async () => {
   const matches = [];
   return await Promise.all(users.map(async (userId) => {
     const storedLen = await redis.llenAsync('gradtype:features:' + userId);
+    let storedFeatures = await redis.lrangeAsync('gradtype:features:' + userId,
+      0, storedLen);
+
+    storedFeatures = storedFeatures.map((json) => JSON.parse(json));
     return {
       userId,
-      features: await redis.lrangeAsync('gradtype:features:' + userId,
-        0, storedLen),
+      features: storedFeatures,
     };
   }));
 };
