@@ -1,4 +1,4 @@
-const HOST = 'http://127.0.0.1:8000';
+const HOST = 'https://gradtype.darksi.de/api';
 
 export default class API {
   constructor() {

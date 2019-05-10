@@ -92,8 +92,8 @@ async function features(req, res) {
 }
 
 module.exports = router(
-  get('/auth/github', authGithub),
-  put('/auth/github', putAuthGithub),
-  get('/user', user),
-  put('/features', features),
+  get('/api/auth/github', authGithub),
+  put('/api/auth/github', putAuthGithub),
+  get('/api/user', user),
+  put('/api/features', features),
 );
