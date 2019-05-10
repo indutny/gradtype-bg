@@ -51,7 +51,7 @@ export default class Typist {
     this.finished = 0;
 
     // Current sentence index
-    this.sentence = 0;
+    this.sentence = (Math.random() * SENTENCES.length) | 0;
 
     // Current letter index
     this.letter = 0;
