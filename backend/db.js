@@ -98,3 +98,17 @@ exports.searchFeatures = async (features) => {
   matches.sort((a, b) => a.distance - b.distance);
   return matches.slice(0, MAX_RESULTS);
 };
+
+exports.dumpFeatures = async () => {
+  const users = await redis.hkeysAsync('gradtype:user');
+
+  const matches = [];
+  return await Promise.all(users.map(async (userId) => {
+    const storedLen = await redis.llenAsync('gradtype:features:' + userId);
+    return {
+      userId,
+      features: await redis.lrangeAsync('gradtype:features:' + userId,
+        0, storedLen),
+    };
+  }));
+};
