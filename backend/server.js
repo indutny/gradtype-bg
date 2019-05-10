@@ -21,7 +21,10 @@ module.exports = async (req, res) => {
       req.user = await parseAuth(req.headers.authorization);
     } catch (e) {
       debug('auth error', e);
-      return send(res, 500, { error: 'invalid authorization header' });
+      return send(res, 500, {
+        error: 'invalid authorization header',
+        details: e.message,
+      });
     }
   }
 
