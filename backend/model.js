@@ -1,7 +1,7 @@
 'use strict';
 
 const CUTOFF = 1.6291852466234173;
-const NEIGHBORS = 20;
+const NEIGHBORS = 30;
 
 const WEIGHTS = require('../data/weights');
 
@@ -208,8 +208,8 @@ class Model {
       distances.push(distance(features, sample));
     }
 
-    // distances.sort();
-    // distances = distances.slice(0, NEIGHBORS);
+    distances.sort();
+    distances = distances.slice(0, NEIGHBORS);
 
     let mean = 0;
     for (const d of distances) {
