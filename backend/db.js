@@ -12,6 +12,7 @@ redis.delAsync = promisify(redis.del);
 redis.lpushAsync = promisify(redis.lpush);
 redis.llenAsync = promisify(redis.llen);
 redis.lrangeAsync = promisify(redis.lrange);
+redis.hgetAsync = promisify(redis.hget);
 redis.hsetAsync = promisify(redis.hset);
 redis.hkeysAsync = promisify(redis.hkeys);
 
