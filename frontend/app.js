@@ -1,16 +1,13 @@
 import WEIGHTS from '../data/weights';
 import INDUTNY from '../data/indutny';
 
-import Model from './model';
+import API from './api';
 import Typist from './typist';
-import { distance, filter } from './utils';
-
-const CUTOFF = 1.6291852466234173;
-const NEIGHBORS = 20;
+import { filter } from './utils';
 
 class App {
   constructor() {
-    this.model = new Model(WEIGHTS);
+    this.api = new API();
     this.typist = new Typist();
 
     this.elem = document.createElement('section');
@@ -25,33 +22,31 @@ class App {
     this.info.classList.add('info');
     this.elem.appendChild(this.info);
 
-    this.typist.onFlush = (sentence, log) => this.onLog(sentence, log);
+    this.login = document.createElement('button');
+    this.login.textContent = 'Log In';
+    this.login.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      this.api.auth();
+    });
+    this.elem.appendChild(this.login);
+
+    this.typist.onFlush = (sentence, log) => {
+      this.onLog(sentence, log).catch((e) => {
+        console.error(e);
+      });
+    };
 
     this.total = 0;
 
     this.typist.start();
   }
 
-  onLog(sentence, log) {
+  async onLog(sentence, log) {
     const events = filter(sentence, log);
-    const features = this.model.call(events);
 
-    console.log(JSON.stringify(features));
-
-    let distances = [];
-    for (const sample of INDUTNY) {
-      distances.push(distance(features, sample));
-    }
-
-    distances.sort();
-    distances = distances.slice(0, NEIGHBORS);
-
-    let mean = 0;
-    for (const d of distances) {
-      mean += d;
-    }
-    mean /= distances.length;
-    mean /= CUTOFF;
+    const res = await fetch({
+    });
 
     let text;
     if (mean > 1) {

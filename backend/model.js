@@ -1,5 +1,10 @@
 'use strict';
 
+const CUTOFF = 1.6291852466234173;
+const NEIGHBORS = 20;
+
+const WEIGHTS = require('../data/weights');
+
 // Do not carry full assert to the browser
 function assert(exp) {
   if (!exp)
@@ -9,6 +14,14 @@ assert.strictEqual = (a, b) => {
   if (a !== b)
     throw new Error(`Assert equal failure ${a} !== ${b}`);
 };
+
+function distance(a, b) {
+  let sum = 0;
+  for (let i = 0; i < a.length; i++) {
+    sum += (a[i] - b[i]) ** 2;
+  }
+  return Math.sqrt(sum);
+}
 
 function matmul(vec, mat) {
   assert.strictEqual(vec.length, mat.length);
@@ -137,7 +150,7 @@ class Dense {
   }
 }
 
-export default class Model {
+class Model {
   constructor(weights) {
     this.embedding = weights['embedding/weights:0'];
     this.times = new Dense(weights['processed_times/kernel:0'][0],
@@ -152,6 +165,9 @@ export default class Model {
     this.features = new Dense(weights['features/kernel:0'],
                               weights['features/bias:0'],
                               nop);
+
+    this.outSize = weights['features/bias:0'].length;
+    this.cutoff = CUTOFF;
   }
 
   applyEmbedding(event) {
@@ -181,4 +197,29 @@ export default class Model {
 
     return x;
   }
+
+  computeDistance(features, list) {
+    if (list.length === 0) {
+      return Infinity;
+    }
+
+    let distances = [];
+    for (const sample of list) {
+      distances.push(distance(features, sample));
+    }
+
+    distances.sort();
+    distances = distances.slice(0, NEIGHBORS);
+
+    let mean = 0;
+    for (const d of distances) {
+      mean += d;
+    }
+    mean /= distances.length;
+    mean /= CUTOFF;
+
+    return mean;
+  }
 }
+
+module.exports = new Model(WEIGHTS);

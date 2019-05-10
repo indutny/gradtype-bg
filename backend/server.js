@@ -17,6 +17,11 @@ async function parseAuth(header) {
 }
 
 module.exports = async (req, res) => {
+  // TODO(indutny): be strict
+  res.setHeader('access-control-allow-origin', '*');
+  res.setHeader('access-control-allow-methods', 'GET,PUT');
+  res.setHeader('access-control-allow-headers', 'content-type,authorization');
+
   if (req.headers.authorization) {
     try {
       req.user = await parseAuth(req.headers.authorization);

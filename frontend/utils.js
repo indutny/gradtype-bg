@@ -86,11 +86,3 @@ export function filter(sentence, events) {
 
   return sequence;
 }
-
-export function distance(a, b) {
-  let sum = 0;
-  for (let i = 0; i < a.length; i++) {
-    sum += (a[i] - b[i]) ** 2;
-  }
-  return Math.sqrt(sum);
-}
