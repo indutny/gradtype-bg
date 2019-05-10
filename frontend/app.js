@@ -36,7 +36,8 @@ class App {
     });
 
     this.api.getUser().then((user) => {
-      console.log(user);
+      this.login.disabled = !!user;
+      this.logout.disabled = !user;
     });
 
     this.typist.onFlush = (sentence, log) => {
@@ -52,7 +53,11 @@ class App {
     const events = filter(sentence, log);
 
     const res = await this.api.sendFeatures(events);
-    this.stats.textContent = 'Total sentences typed: ' + res.featureCount;
+    if (res.featureCount !== undefined) {
+      this.stats.textContent = 'Total sentences typed: ' + res.featureCount;
+    } else {
+      this.stats.textContent = '';
+    }
 
     let text;
     if (res.results.length < 0) {

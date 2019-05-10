@@ -59,7 +59,8 @@ export default class API {
   }
 
   async getUser() {
-    return await this.request('GET', '/user');
+    const { user } = await this.request('GET', '/user');
+    return user;
   }
 
   async sendFeatures(events) {
