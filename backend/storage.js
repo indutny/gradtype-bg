@@ -11,7 +11,7 @@ const WEIGHTS = require('../data/weights');
 
 const REDIS_METHODS = [
   'get', 'set', 'setex', 'del',
-  'lpush', 'lrange',
+  'lpush', 'lrange', 'llen',
   'hget', 'hset', 'hkeys',
 ];
 
@@ -20,6 +20,7 @@ const NONCE_EXPIRATION = 300;
 const TOKEN_SIZE = 24;
 const TOKEN_EXPIRATION = 7 * 24 * 3600;
 const MAX_RESULTS = 5;
+const MAX_SEQUENCES = 90;
 
 const NONCE_PREFIX = 'gradtype:nonce:';
 const USER_BY_TOKEN_PREFIX = 'gradtype:user-by-token:';
@@ -152,9 +153,14 @@ module.exports = class Storage {
   }
 
   async storeSequence(userId, sequence) {
-    const len = await this.redis.lpushAsync(EVENTS_BY_USER_PREFIX + userId,
-      JSON.stringify(sequence));
+    const key = EVENTS_BY_USER_PREFIX + userId;
+    const pastLen = await this.redis.llen(key);
+    if (pastLen > MAX_SEQUENCES) {
+      return { sequenceCount: pastLen };
+    }
 
+    const len = await this.redis.lpushAsync(key,
+      JSON.stringify(sequence));
     this.onSequences(userId, [ sequence ]);
 
     return { sequenceCount: len };
