@@ -1,5 +1,22 @@
 'use strict';
 
+const cluster = require('cluster');
+const os = require('os');
+
+if (cluster.isMaster) {
+  function start() {
+    const worker = cluster.fork();
+    worker.once('exit', () => {
+      setTimeout(start, 50);
+    });
+  }
+
+  for (let i = 0; i < os.cpus().length; i++) {
+    start();
+  }
+  return;
+}
+
 const fs = require('fs');
 const App = require('./app');
 
