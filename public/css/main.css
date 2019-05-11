@@ -8,6 +8,8 @@ body {
 }
 
 #typist {
+  letter-spacing: 0.05rem;
+
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
