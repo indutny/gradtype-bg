@@ -6,6 +6,7 @@ const express = require('express');
 const { send, json } = require('micro');
 const serveStatic = require('serve-static');
 const debug = require('debug')('gradtype:app');
+const Joi = require('@hapi/joi');
 
 const Storage = require('./storage');
 const GitHub = require('./github');
@@ -20,6 +21,17 @@ function decorate(handler) {
     });
   };
 }
+
+const SCHEMA = {
+  sequence: Joi.object().keys({
+    features: Joi.array().min(32).max(128).items(Joi.number()),
+    sequence: Joi.array().min(32).max(96).items(Joi.object().keys({
+      code: Joi.number(),
+      hold: Joi.number(),
+      duration: Joi.number(),
+    })),
+  })
+};
 
 module.exports = class App {
   constructor(options = {}) {
@@ -135,18 +147,15 @@ module.exports = class App {
 
   async putSequence(req, res) {
     const body = await json(req);
-    if (!body || !Array.isArray(body.sequence)) {
-      return send(res, 400, { error: 'missing `sequence` array' });
+    const { error, value } = SCHEMA.sequence.validate(body);
+    if (error) {
+      return send(res, 400, { error: error.message });
     }
 
-    if (!Array.isArray(body.features)) {
-      return send(res, 400, { error: 'missing `features` array' });
-    }
-
-    const results = await this.storage.search(body.features);
+    const results = await this.storage.search(value.features);
     let info;
     if (req.user) {
-      info = await this.storage.storeSequence(req.user.id, body.sequence);
+      info = await this.storage.storeSequence(req.user.id, value.sequence);
     }
 
     send(res, 200, Object.assign({}, info, { results }));
