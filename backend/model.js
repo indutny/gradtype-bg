@@ -1,6 +1,6 @@
 'use strict';
 
-const CUTOFF = 1.8775921096422477;
+const CUTOFF = 1.57;
 const NEIGHBORS = 30;
 
 // Do not carry full assert to the browser
