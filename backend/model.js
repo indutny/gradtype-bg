@@ -151,8 +151,8 @@ class Dense {
 class Model {
   constructor(weights) {
     this.embedding = weights['embedding/weights:0'];
-    this.times = new Dense(weights['processed_times/kernel:0'][0],
-                           weights['processed_times/bias:0'],
+    this.times = new Dense(weights['process_times/kernel:0'],
+                           weights['process_times/bias:0'],
                            nop);
     this.lstm = new LSTM(
       weights['rnn/multi_rnn_cell/cell_0/lstm_fw_0/kernel:0'],
