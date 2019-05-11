@@ -18,8 +18,7 @@ body {
   user-select: none;
 
   width: 100%;
-  font-size: 24px;
-  margin-bottom: 16px;
+  font-size: 1.25rem;
 }
 
 .typist-completed {
