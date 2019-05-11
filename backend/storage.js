@@ -154,7 +154,7 @@ module.exports = class Storage {
 
   async storeSequence(userId, sequence) {
     const key = EVENTS_BY_USER_PREFIX + userId;
-    const pastLen = await this.redis.llen(key);
+    const pastLen = await this.redis.llenAsync(key);
     if (pastLen > MAX_SEQUENCES) {
       return { sequenceCount: pastLen };
     }
