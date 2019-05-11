@@ -26,11 +26,6 @@ const model = require('./model');
 
 const crypto = require('crypto');
 
-const nonces = new Set();
-const usersByToken = new Map();
-const usersById = new Map();
-const featuresByUser = new Map();
-
 exports.getNonce = async () => {
   const nonce = crypto.randomBytes(NONCE_SIZE).toString('hex');
   await redis.setexAsync('gradtype:nonce:' + nonce, NONCE_EXPIRATION, '1');

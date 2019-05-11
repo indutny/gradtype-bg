@@ -3,6 +3,8 @@
 const CUTOFF = 1.6291852466234173;
 const NEIGHBORS = 30;
 
+const WEIGHTS = require('../data/weights');
+
 // Do not carry full assert to the browser
 function assert(exp) {
   if (!exp)
@@ -220,4 +222,4 @@ class Model {
   }
 }
 
-module.exports = Model;
+module.exports = new Model(WEIGHTS);
