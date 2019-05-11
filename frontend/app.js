@@ -1,6 +1,3 @@
-import WEIGHTS from '../data/weights';
-import INDUTNY from '../data/indutny';
-
 import API from './api';
 import Typist from './typist';
 import { filter } from './utils';
@@ -50,17 +47,17 @@ class App {
   }
 
   async onLog(sentence, log) {
-    const events = filter(sentence, log);
+    const sequence = filter(sentence, log);
 
     this.stats.textContent = 'Submitting...';
     this.result.textContent = '...';
 
-    const res = await this.api.sendFeatures(events);
-    if (res.featureCount !== undefined) {
-      const stars = Math.min(5, Math.floor((res.featureCount / 60) * 5));
+    const res = await this.api.sendSequence(sequence);
+    if (res.sequenceCount !== undefined) {
+      const stars = Math.min(5, Math.floor((res.sequenceCount / 60) * 5));
       const missing = 5 - stars;
 
-      this.stats.textContent = 'Sentences stored: ' + res.featureCount +
+      this.stats.textContent = 'Sentences stored: ' + res.sequenceCount +
         ', Rating: ' + '⭐️'.repeat(stars) + '🔹'.repeat(missing);
     } else {
       this.stats.textContent = '';

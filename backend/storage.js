@@ -152,7 +152,7 @@ module.exports = class Storage {
   }
 
   async storeSequence(userId, sequence) {
-    const len = await this.redis.lpush(EVENTS_BY_USER_PREFIX + userId,
+    const len = await this.redis.lpushAsync(EVENTS_BY_USER_PREFIX + userId,
       JSON.stringify(sequence));
 
     this.onSequences(userId, [ sequence ]);
@@ -163,9 +163,9 @@ module.exports = class Storage {
   async search(features) {
     const matches = [];
     for (const [ userId, known ] of this.features) {
-      const distance = model.computeDistance(features, known);
+      const distance = this.model.computeDistance(features, known);
       if (distance < 1) {
-        const json = await this.getUserById(userId);
+        const user = await this.getUserById(userId);
         matches.push({ distance, user });
       }
     }

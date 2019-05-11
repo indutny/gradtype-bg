@@ -201,6 +201,10 @@ class Model {
       return Infinity;
     }
 
+    if (features.length !== this.outSize) {
+      throw new Error('Invalid features');
+    }
+
     let distances = [];
     for (const sample of list) {
       distances.push(distance(features, sample));

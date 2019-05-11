@@ -1,7 +1,12 @@
-const HOST = 'https://gradtype.darksi.de/api';
+import WEIGHTS from '../data/weights';
+import Model from '../backend/model';
+
+const HOST = '/api';
 
 export default class API {
   constructor() {
+    this.model = new Model(WEIGHTS);
+
     this.token = localStorage.getItem('auth:token');
   }
 
@@ -63,8 +68,10 @@ export default class API {
     return user;
   }
 
-  async sendFeatures(events) {
-    const res = await this.request('PUT', '/features', { events });
+  async sendSequence(sequence) {
+    const features = this.model.call(sequence);
+
+    const res = await this.request('PUT', '/sequence', { sequence, features });
     if (res.error) {
       throw new Error(res.error);
     }
