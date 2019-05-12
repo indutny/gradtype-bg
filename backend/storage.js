@@ -11,7 +11,7 @@ const levenshtein = require('fast-levenshtein');
 const Model = require('./model');
 const WEIGHTS = require('../data/weights');
 const SENTENCES = require('../data/sentences').map((sentence) => {
-  return sentence.toLowerCase().replace(/[^a-z0-9,. ]/g, '');
+  return sentence.toLowerCase().replace(/[^a-z,. ]/g, '');
 });
 const { compress, decompress } = require('../frontend/utils');
 
@@ -208,7 +208,7 @@ module.exports = class Storage {
     const unfixedLen = seq.length;
 
     const out = [];
-    const original = match.original.toLowerCase().replace(/[^a-z0-9., ]+/g, '');
+    const original = match.original.toLowerCase().replace(/[^a-z., ]+/g, '');
     for (let i = 0; i < original.length; i++) {
       const expected = compress(original[i].charCodeAt(0));
       for (let j = 0; j < seq.length; j++) {
