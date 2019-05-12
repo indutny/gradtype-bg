@@ -4,7 +4,7 @@ import RAW_SENTENCES from '../data/sentences';
 const RELEASE_DELAY = 100;
 
 const SENTENCES = RAW_SENTENCES.map((sentence) => {
-  return sentence.replace(/\s/g, '␣').toLowerCase();
+  return sentence.toLowerCase();
 });
 
 export default class Typist {
@@ -95,7 +95,7 @@ export default class Typist {
     const sentence = SENTENCES[this.sentence];
 
     const expected = sentence[this.letter];
-    if (key !== expected && !(key === ' ' && expected === '␣')) {
+    if (key !== expected) {
       return;
     }
 
