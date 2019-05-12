@@ -1,8 +1,6 @@
-'use strict';
+import assert from 'assert';
 
-const assert = require('assert');
-
-const Storage = require('../backend/storage');
+import Storage from '../backend/storage';
 
 describe('Storage', () => {
   let s;

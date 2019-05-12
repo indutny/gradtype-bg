@@ -69,20 +69,24 @@ export function filter(sentence, events) {
 
       // Time delta between two presses
       const duration = next.now - event.now;
-      info.set(event.key, { duration, start: event.now });
+      const reserve = { code: null, hold: null, duration: null };
+      info.set(event.key, { duration, start: event.now, reserve });
+      sequence.push(reserve);
       continue;
     }
 
     const prev = info.get(event.key);
     const hold = event.now - prev.start;
     info.delete(event.key);
-
-    sequence.push({
+    Object.assign(prev.reserve, {
       code: compress(event.key.charCodeAt(0)),
       hold,
       duration: prev.duration,
     });
   }
 
-  return sequence;
+  return sequence.filter((elem) => {
+    return elem.duration !== null && elem.hold !== null &&
+      elem.duration !== null;
+  });
 }
