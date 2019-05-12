@@ -1,4 +1,6 @@
-export function compress(code) {
+// NOTE: not using esm here for compatibility with backend
+
+function compress(code) {
   // 'abcdefghijklmnopqrstuvwxyz ,.'
   // a - z
   if (0x61 <= code && code <= 0x7a) {
@@ -23,8 +25,34 @@ export function compress(code) {
     throw new Error('Unexpected code: ' + code.toString(16));
   }
 }
+exports.compress = compress;
 
-export function filter(sentence, events) {
+function decompress(code) {
+  // 'abcdefghijklmnopqrstuvwxyz ,.'
+  // a - z
+  if (0 <= code && code < 26) {
+    code += 0x61;
+
+  // ' '
+  } else if (code === 26) {
+    code = 0x20;
+
+  // ','
+  } else if (code === 27) {
+    code = 0x2c;
+
+  // '.'
+  } else if (code === 28) {
+    code = 0x2e;
+  } else {
+    throw new Error('Unexpected code: ' + code);
+  }
+
+  return String.fromCharCode(code);
+}
+exports.decompress = decompress;
+
+exports.filter = function filter(sentence, events) {
   sentence = sentence.toLowerCase();
 
   const filtered = [];

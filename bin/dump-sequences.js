@@ -5,6 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 const Storage = require('../backend/storage');
+const SENTENCES = require('../data/sentences');
 
 const SECRET_KEY = process.env.SECRET_KEY;
 if (!SECRET_KEY) {

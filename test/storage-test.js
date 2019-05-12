@@ -2,6 +2,9 @@ import assert from 'assert';
 
 import Storage from '../backend/storage';
 
+import REPAIR_SEQ from './fixtures/repair';
+import REPAIR_SEQ_EXPECTED from './fixtures/repair.expected';
+
 describe('Storage', () => {
   let s;
 
@@ -41,5 +44,11 @@ describe('Storage', () => {
 
     const featuresAfter = s.features.get('test').length;
     assert.strictEqual(featuresAfter, featuresBefore + 1);
+  });
+
+  it('should repair sequence', async () => {
+    const repaired = s.repair('indutny', REPAIR_SEQ);
+
+    assert.deepStrictEqual(repaired, REPAIR_SEQ_EXPECTED);
   });
 });

@@ -1,13 +1,19 @@
 'use strict';
 
+const assert = require('assert');
 const crypto = require('crypto');
 const { promisify } = require('util');
 
 const LRU = require('lru-cache');
 const redis = require('redis');
+const levenshtein = require('fast-levenshtein');
 
 const Model = require('./model');
 const WEIGHTS = require('../data/weights');
+const SENTENCES = require('../data/sentences').map((sentence) => {
+  return sentence.toLowerCase().replace(/[^a-z0-9,. ]/g, '');
+});
+const { compress, decompress } = require('../frontend/utils');
 
 const REDIS_METHODS = [
   'get', 'set', 'setex', 'del',
@@ -21,6 +27,8 @@ const TOKEN_SIZE = 24;
 const TOKEN_EXPIRATION = 7 * 24 * 3600;
 const MAX_RESULTS = 5;
 const MAX_SEQUENCES = 90;
+
+const MIN_REPAIR_OUT_LEN = 0.75;
 
 const NONCE_PREFIX = 'gradtype:nonce:';
 const USER_BY_TOKEN_PREFIX = 'gradtype:user-by-token:';
@@ -179,6 +187,44 @@ module.exports = class Storage {
     matches.sort((a, b) => a.distance - b.distance);
     return matches.slice(0, MAX_RESULTS);
   };
+
+  repair(userId, seq) {
+    const sentence = seq.map((event) => decompress(event.code)).join('');
+
+    const distances = SENTENCES.map((original) => {
+      return {
+        original,
+        distance: levenshtein.get(original, sentence),
+      };
+    });
+    distances.sort((a, b) => a.distance - b.distance);
+
+    const match = distances[0];
+    if (match.distance === 0) {
+      return seq;
+    }
+
+    const unfixedLen = seq.length;
+
+    const out = [];
+    const original = match.original.toLowerCase().replace(/[^a-z0-9., ]+/g, '');
+    for (let i = 0; i < original.length; i++) {
+      const expected = compress(original[i].charCodeAt(0));
+      for (let j = 0; j < seq.length; j++) {
+        if (expected === seq[j].code) {
+          out.push(seq[j]);
+          seq.splice(j, 1);
+          break;
+        }
+      }
+    }
+
+    if (out.length < unfixedLen * MIN_REPAIR_OUT_LEN) {
+      throw new Error(`Users ${userId} seq ${sentence} is beyond repair`);
+    }
+
+    return out;
+  }
 
   // Internal
 

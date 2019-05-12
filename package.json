@@ -25,6 +25,7 @@
     "axios": "^0.18.0",
     "debug": "^4.1.1",
     "express": "^4.16.4",
+    "fast-levenshtein": "^2.0.6",
     "lru-cache": "^5.1.1",
     "micro": "^9.3.4",
     "microrouter": "^3.1.3",
