@@ -47,7 +47,7 @@ describe('Storage', () => {
   });
 
   it('should repair sequence', async () => {
-    const repaired = s.repair('indutny', REPAIR_SEQ);
+    const repaired = s.repairSeq('indutny', REPAIR_SEQ);
 
     assert.deepStrictEqual(repaired, REPAIR_SEQ_EXPECTED);
   });

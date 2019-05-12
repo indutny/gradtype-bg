@@ -16,7 +16,7 @@ const SENTENCES = require('../data/sentences').map((sentence) => {
 const { compress, decompress } = require('../frontend/utils');
 
 const REDIS_METHODS = [
-  'get', 'set', 'setex', 'del',
+  'get', 'set', 'setex', 'del', 'rename',
   'lpush', 'lrange', 'llen',
   'hget', 'hset', 'hkeys',
 ];
@@ -35,6 +35,7 @@ const USER_BY_TOKEN_PREFIX = 'gradtype:user-by-token:';
 const USER_HMAP = 'gradtype:user';
 const USER_PREFIX = 'gradtype:user:';  // only for LRU
 const EVENTS_BY_USER_PREFIX = 'gradtype:events:';
+const REPAIR_BY_USER_PREFIX = 'gradtype:repair:';
 
 module.exports = class Storage {
   constructor(options = {}) {
@@ -188,7 +189,7 @@ module.exports = class Storage {
     return matches.slice(0, MAX_RESULTS);
   };
 
-  repair(userId, seq) {
+  repairSeq(userId, seq) {
     const sentence = seq.map((event) => decompress(event.code)).join('');
 
     const distances = SENTENCES.map((original) => {
@@ -224,6 +225,31 @@ module.exports = class Storage {
     }
 
     return out;
+  }
+
+  async repair() {
+    const userIds = [];
+
+    for (const { userId, sequences } of await this.getAllSequences()) {
+      userIds.push(userId);
+      await this.redis.delAsync(REPAIR_BY_USER_PREFIX + userId);
+      for (let seq of sequences) {
+        seq = this.repairSeq(userId, seq);
+        await this.redis.lpushAsync(
+          REPAIR_BY_USER_PREFIX + userId,
+          JSON.stringify(seq));
+      }
+    }
+
+    await Promise.all(userIds.map(async (userId) => {
+      try {
+        await this.redis.renameAsync(
+          REPAIR_BY_USER_PREFIX + userId,
+          EVENTS_BY_USER_PREFIX + userId)
+      } catch (e) {
+        console.error(e.message + ': at ' + userId);
+      }
+    }));
   }
 
   // Internal
