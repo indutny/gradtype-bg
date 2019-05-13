@@ -18,7 +18,7 @@ class App {
     this.login.addEventListener('click', (e) => {
       e.preventDefault();
 
-      this.api.auth().then(() => {
+      this.api.auth('github').then(() => {
         this.login.disabled = true;
         this.logout.disabled = false;
       });

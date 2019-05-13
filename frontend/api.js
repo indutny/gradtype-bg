@@ -23,15 +23,15 @@ export default class API {
     return await res.json();
   }
 
-  async auth() {
+  async auth(provider = 'github') {
     if (this.token) {
       return;
     }
 
-    const { url } = await this.request('GET', '/auth/github');
+    const { url } = await this.request('GET', `/auth/${provider}`);
 
     const child = window.open(url,
-      'gradtype.github.auth',
+      'gradtype.auth',
       'width=500,height=500');
 
     const { code, state } = await new Promise((resolve, reject) => {
@@ -49,7 +49,7 @@ export default class API {
       window.addEventListener('message', onMessage);
     });
 
-    const { token } = await this.request('PUT', '/auth/github', {
+    const { token } = await this.request('PUT', `/auth/${provider}`, {
       code,
       state,
     });

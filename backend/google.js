@@ -3,25 +3,27 @@
 const crypto = require('crypto');
 const axios = require('axios');
 
-const GITHUB = 'github.com';
-
-module.exports = class GitHub {
+module.exports = class Google {
   constructor(storage, options = {}) {
     this.storage = storage;
     this.options = options;
-    this.type = 'github';
+    this.type = 'google';
   }
 
   async getAuthURL() {
-    return `https://${GITHUB}/login/oauth/authorize?` +
-      `client_id=${this.options.clientId}&` +
+    return `https://accounts.google.com/o/oauth2/v2/auth?` +
+      'response_type=code&' +
+      'redirect_uri=' + encodeURIComponent(
+        'https://gradtype-mturk.darksi.de/auth/google/callback.html') + '&' +
+      'scope=email%20profile&' +
+      `client_id=${encodeURIComponent(this.options.clientId)}&` +
       `state=${await this.storage.createNonce()}`;
   }
 
   async fetchToken(code) {
     const { status, data } = await axios({
       method: 'POST',
-      url: `https://${GITHUB}/login/oauth/access_token`,
+      url: 'https://www.googleapis.com/oauth2/v4/token',
       responseType: 'json',
       headers: {
         'accept': 'application/json',
@@ -29,6 +31,7 @@ module.exports = class GitHub {
       data: {
         client_id: this.options.clientId,
         client_secret: this.options.clientSecret,
+        grant_type: 'authorization_code',
         code
       }
     });
@@ -47,7 +50,7 @@ module.exports = class GitHub {
   async fetchUser(token) {
     const { status, data } = await axios({
       method: 'GET',
-      url: `https://api.${GITHUB}/user`,
+      url: 'https://www.googleapis.com/oauth2/v3/userinfo',
       responseType: 'json',
       headers: {
         'authorization': `token ${token}`,

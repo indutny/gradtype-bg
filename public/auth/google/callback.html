@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Auth callback</title>
+  </head>
+  <body>
+    <script>
+      !function() {
+        const match = location.search.match(/code=([^&]+)&state=([^&]+)/);
+        if (!match) {
+          window.opener.postMessage({
+            error: 'no code and state in query',
+          });
+        } else {
+          window.opener.postMessage({
+            code: match[1],
+            state: match[2],
+          });
+        }
+        window.close();
+      }();
+    </script>
+  </body>
+</html>

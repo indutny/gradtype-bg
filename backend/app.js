@@ -10,6 +10,7 @@ const Joi = require('@hapi/joi');
 
 const Storage = require('./storage');
 const GitHub = require('./github');
+const Google = require('./google');
 
 const DIST = path.join(__dirname, '..', 'dist');
 
@@ -37,6 +38,7 @@ module.exports = class App {
   constructor(options = {}) {
     this.storage = new Storage(options.storage);
     this.github = new GitHub(this.storage, options.github);
+    this.google = new Google(this.storage, options.google);
   }
 
   async getServer() {
@@ -69,10 +71,15 @@ module.exports = class App {
     }));
 
     // Routes
-    app.get('/api/auth/github',
-       decorate((...args) => this.getAuthGithub(...args)));
-    app.put('/api/auth/github',
-       decorate((...args) => this.putAuthGithub(...args)));
+    [
+      { provider: this.github, name: 'github' },
+      { provider: this.google, name: 'google' },
+    ].forEach(({ provider, name }) => {
+      app.get(`/api/auth/${name}`,
+         decorate((...args) => this.getAuth(provider, ...args)));
+      app.put(`/api/auth/${name}`,
+         decorate((...args) => this.putAuth(provider, ...args)));
+    });
     app.get('/api/user',
        decorate((...args) => this.getUser(...args)));
     app.put('/api/sequence',
@@ -88,9 +95,9 @@ module.exports = class App {
     await this.storage.shutdown();
   }
 
-  async getAuthGithub(req, res) {
+  async getAuth(provider, req, res) {
     try {
-      const url = await this.github.getAuthURL();
+      const url = await provider.getAuthURL();
       return send(res, 200, { url });
     } catch (e) {
       debug('get auth url error', e);
@@ -98,7 +105,7 @@ module.exports = class App {
     }
   }
 
-  async putAuthGithub(req, res) {
+  async putAuth(provider, req, res) {
     const body = await json(req);
     if (!body || !body.code || !body.state) {
       return send(res, 400, { error: 'missing `code` and `state` in body' });
@@ -112,25 +119,25 @@ module.exports = class App {
 
     let token;
     try {
-      token = await this.github.fetchToken(code);
+      token = await provider.fetchToken(code);
     } catch (e) {
       debug('fetch token error', e);
-      return send(res, 500, { error: 'can\'t fetch github token' });
+      return send(res, 500, { error: 'can\'t fetch auth token' });
     }
 
     let user;
     try {
-      user = await this.github.fetchUser(token);
+      user = await provider.fetchUser(token);
     } catch (e) {
       debug('fetch user error', e);
-      return send(res, 500, { error: 'can\'t fetch github user' });
+      return send(res, 500, { error: 'can\'t fetch auth user' });
     }
 
     let authToken;
     try {
       authToken = await this.storage.storeUser({
-        type: 'github',
-        id: 'github:' + user.login,
+        type: provider.type,
+        id: provider.type + ':' + user.login,
         user,
       });
     } catch (e) {
