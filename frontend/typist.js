@@ -47,6 +47,12 @@ export default class Typist {
   }
 
   reset() {
+    // Currently pressed keys
+    this.pressed = new Set();
+
+    // Is `flush()` pending?
+    this.pendingFlush = false;
+
     // Number of finished sentences
     this.finished = 0;
 
@@ -85,6 +91,7 @@ export default class Typist {
     const log = this.log;
     this.log = [];
 
+    this.pendingFlush = false;
     this.onFlush(RAW_SENTENCES[this.sentence], log);
   }
 
@@ -99,18 +106,12 @@ export default class Typist {
       return;
     }
 
+    this.pressed.add(key);
+
     // Next letter
     this.letter++;
     if (this.letter === sentence.length) {
-      this.flush();
-
-      setTimeout(() => {
-        // Next sentence
-        this.letter = 0;
-        this.sentence = (this.sentence + 1) % SENTENCES.length;
-
-        this.update();
-      }, RELEASE_DELAY);
+      this.pendingFlush = true;
     } else {
       this.update();
     }
@@ -119,5 +120,16 @@ export default class Typist {
   onKeyUp(key) {
     const now = Date.now() / 1000;
     this.log.push({ type: 'up', now, key });
+
+    this.pressed.delete(key);
+    if (this.pendingFlush && this.pressed.size === 0) {
+      this.flush();
+
+      // Next sentence
+      this.letter = 0;
+      this.sentence = (this.sentence + 1) % SENTENCES.length;
+
+      this.update();
+    }
   }
 }
