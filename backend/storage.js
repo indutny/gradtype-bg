@@ -46,6 +46,7 @@ module.exports = class Storage {
     this.model = new Model(WEIGHTS);
     this.redis = redis.createClient(options.redis);
 
+    // TODO(indutny): subscribe to redis changes!!
     // userId => featureList
     this.features = new Map();
 
