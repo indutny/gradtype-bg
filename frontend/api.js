@@ -18,7 +18,7 @@ export default class API {
         'content-type': 'application/json',
       },
       body: data ? JSON.stringify(data) : undefined,
-    })
+    });
 
     return await res.json();
   }
