@@ -16,7 +16,7 @@ module.exports = class Google {
     return `https://accounts.google.com/o/oauth2/v2/auth?` +
       'response_type=code&' +
       'redirect_uri=' + encodeURIComponent(REDIRECT) + '&' +
-      'scope=email%20profile&' +
+      'scope=email&' +
       `client_id=${encodeURIComponent(this.options.clientId)}&` +
       `state=${await this.storage.createNonce()}`;
   }
@@ -55,7 +55,7 @@ module.exports = class Google {
       url: 'https://www.googleapis.com/oauth2/v3/userinfo',
       responseType: 'json',
       headers: {
-        'authorization': `token ${token}`,
+        'authorization': `Bearer ${token}`,
         'user-agent': 'gradtype',
         'accept': 'application/json',
       },
