@@ -65,6 +65,10 @@ export default class API {
 
   async getUser() {
     const { user } = await this.request('GET', '/user');
+    if (!user) {
+      this.token = null;
+      localStorage.removeItem('auth:token');
+    }
     return user;
   }
 

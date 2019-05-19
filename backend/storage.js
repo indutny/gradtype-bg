@@ -27,6 +27,7 @@ const TOKEN_SIZE = 24;
 const TOKEN_EXPIRATION = 7 * 24 * 3600;
 const MAX_RESULTS = 5;
 const MAX_SEQUENCES = 90;
+const MTURK_SEQUENCES = 20;
 
 const MIN_REPAIR_OUT_LEN = 0.75;
 
@@ -36,6 +37,7 @@ const USER_HMAP = 'gradtype:user';
 const USER_PREFIX = 'gradtype:user:';  // only for LRU
 const EVENTS_BY_USER_PREFIX = 'gradtype:events:';
 const REPAIR_BY_USER_PREFIX = 'gradtype:repair:';
+const MTURK_HMAP = 'gradtype:mturk';
 
 module.exports = class Storage {
   constructor(options = {}) {
@@ -165,15 +167,36 @@ module.exports = class Storage {
   async storeSequence(userId, sequence) {
     const key = EVENTS_BY_USER_PREFIX + userId;
     const pastLen = await this.redis.llenAsync(key);
+
+    let code;
+    if (pastLen + 1 >= MTURK_SEQUENCES) {
+      code = crypto.createHmac('sha256', this.options.mturk)
+        .update(userId)
+        .digest('hex');
+    }
+
     if (pastLen > MAX_SEQUENCES) {
-      return { sequenceCount: pastLen };
+      return { sequenceCount: pastLen, code };
     }
 
     const len = await this.redis.lpushAsync(key,
       JSON.stringify(sequence));
     this.onSequences(userId, [ sequence ]);
 
-    return { sequenceCount: len };
+    if (len === MTURK_SEQUENCES) {
+      this.redis.hsetAsync(MTURK_HMAP, code, 'idle');
+    }
+
+    return { sequenceCount: len, code };
+  }
+
+  async redeem(code) {
+    const status = await this.redis.hgetAsync(MTURK_HMAP, code);
+    if (status !== 'idle') {
+      return false;
+    }
+    await this.redis.hsetAsync(MTURK_HMAP, code, 'redeemed');
+    return true;
   }
 
   async search(features) {

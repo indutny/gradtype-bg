@@ -84,6 +84,8 @@ module.exports = class App {
        decorate((...args) => this.getUser(...args)));
     app.put('/api/sequence',
        decorate((...args) => this.putSequence(...args)));
+    app.put('/api/redeem',
+       decorate((...args) => this.putRedeem(...args)));
 
     // Static files
     app.use(serveStatic(DIST));
@@ -153,18 +155,32 @@ module.exports = class App {
   }
 
   async putSequence(req, res) {
+    if (!req.user) {
+      return send(res, 401, { error: 'Not authorized' });
+    }
+
     const body = await json(req);
     const { error, value } = SCHEMA.sequence.validate(body);
     if (error) {
       return send(res, 400, { error: error.message });
     }
 
-    const results = await this.storage.search(value.features);
-    let info;
-    if (req.user) {
-      info = await this.storage.storeSequence(req.user.id, value.sequence);
+    const info = await this.storage.storeSequence(req.user.id, value.sequence);
+
+    send(res, 200, Object.assign({}, info, { }));
+  }
+
+  async putRedeem(req, res) {
+    const body = await json(req);
+    if (!body || !body.code) {
+      return send(res, 400, { error: 'invalid body' });
     }
 
-    send(res, 200, Object.assign({}, info, { results }));
+    const redeemed = await this.storage.redeem(body.code);
+    if (!redeemed) {
+      return send(res, 400, { error: 'invalid code' });
+    }
+
+    send(res, 200, Object.assign({ ok: true }));
   }
 }

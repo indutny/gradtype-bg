@@ -9,7 +9,6 @@ class App {
 
     this.elem = document.getElementById('app');
 
-    this.result = document.getElementById('info-result');
     this.stats = document.getElementById('info-stats');
 
     this.login = document.getElementById('login');
@@ -18,9 +17,10 @@ class App {
     this.login.addEventListener('click', (e) => {
       e.preventDefault();
 
-      this.api.auth('github').then(() => {
+      this.api.auth('google').then(() => {
         this.login.disabled = true;
         this.logout.disabled = false;
+        this.typist.start();
       });
     });
     this.logout.addEventListener('click', (e) => {
@@ -29,28 +29,30 @@ class App {
       this.api.logout().then(() => {
         this.login.disabled = false;
         this.logout.disabled = true;
+        this.typist.stop();
       });
     });
 
     this.api.getUser().then((user) => {
       this.login.disabled = !!user;
       this.logout.disabled = !user;
+
+      if (user) {
+        this.typist.start();
+      }
     });
 
     this.typist.onFlush = (sentence, log) => {
       this.onLog(sentence, log).catch((e) => {
-        console.error(e);
+        this.stats.textContent = e.message;
       });
     };
-
-    this.typist.start();
   }
 
   async onLog(sentence, log) {
     const sequence = filter(sentence, log);
 
     this.stats.textContent = 'Submitting...';
-    this.result.textContent = '...';
 
     const res = await this.api.sendSequence(sequence);
     if (res.sequenceCount !== undefined) {
@@ -59,24 +61,12 @@ class App {
 
       this.stats.textContent = 'Sentences stored: ' + res.sequenceCount +
         ', Rating: ' + '⭐️'.repeat(stars) + '🔹'.repeat(missing);
+
+      if (res.code) {
+        this.stats.textContent += ', your MTurk code is: ' + res.code;
+      }
     } else {
       this.stats.textContent = '';
-    }
-
-    let text;
-    if (res.results.length < 0) {
-      this.result.textContent = 'No users found';
-      return;
-    }
-
-    this.result.textContent = '';
-    const heading = document.createElement('h6');
-    heading.textContent = 'Results:';
-    this.result.appendChild(heading);
-    for (const result of res.results) {
-      const p = document.createElement('p');
-      p.textContent = `"${result.user.id}" - distance ${result.distance}`;
-      this.result.appendChild(p);
     }
   }
 }
