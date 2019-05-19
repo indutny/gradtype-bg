@@ -3,6 +3,8 @@
 const crypto = require('crypto');
 const axios = require('axios');
 
+const REDIRECT = 'https://gradtype-mturk.darksi.de/auth/google/callback.html';
+
 module.exports = class Google {
   constructor(storage, options = {}) {
     this.storage = storage;
@@ -13,8 +15,7 @@ module.exports = class Google {
   async getAuthURL() {
     return `https://accounts.google.com/o/oauth2/v2/auth?` +
       'response_type=code&' +
-      'redirect_uri=' + encodeURIComponent(
-        'https://gradtype-mturk.darksi.de/auth/google/callback.html') + '&' +
+      'redirect_uri=' + encodeURIComponent(REDIRECT) + '&' +
       'scope=email%20profile&' +
       `client_id=${encodeURIComponent(this.options.clientId)}&` +
       `state=${await this.storage.createNonce()}`;
@@ -32,6 +33,7 @@ module.exports = class Google {
         client_id: this.options.clientId,
         client_secret: this.options.clientSecret,
         grant_type: 'authorization_code',
+        redirect_uri: REDIRECT,
         code
       }
     });
