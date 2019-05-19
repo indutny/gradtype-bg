@@ -13,8 +13,8 @@
           });
         } else {
           window.opener.postMessage({
-            state: match[1],
-            code: match[2],
+            state: unescape(match[1]),
+            code: unescape(match[2]),
           });
         }
         window.close();
