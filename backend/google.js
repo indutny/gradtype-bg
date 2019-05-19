@@ -65,6 +65,6 @@ module.exports = class Google {
       throw new Error('Failed to fetch github token, status: ' + status);
     }
 
-    return { login: data.login, id: data.id };
+    return { login: data.email };
   }
 };
