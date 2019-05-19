@@ -30,6 +30,7 @@ async function start() {
   results = results.filter((result) => result);
 
   console.log('Invalid codes:', results);
+  console.log('Correct codes:', codes.length - results.length);
 }
 
 start().catch((e) => {
