@@ -6,15 +6,15 @@
   <body>
     <script>
       !function() {
-        const match = location.search.match(/code=([^&]+)&state=([^&]+)/);
+        const match = location.search.match(/state=([^&]+)&code=([^&]+)/);
         if (!match) {
           window.opener.postMessage({
             error: 'no code and state in query',
           });
         } else {
           window.opener.postMessage({
-            code: match[1],
-            state: match[2],
+            state: match[1],
+            code: match[2],
           });
         }
         window.close();
