@@ -45,6 +45,7 @@ module.exports = class Storage {
       max: 100000,
     });
 
+    this.options = options;
     this.model = new Model(WEIGHTS);
     this.redis = redis.createClient(options.redis);
 
