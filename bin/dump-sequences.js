@@ -21,7 +21,7 @@ async function run(config, outDir) {
       .update(userId)
       .digest('hex').slice(0, 8);
 
-    const label = 'wb-' + provider + '-' + hmac;
+    const label = 'wb-mturk-' + hmac;
     const content = JSON.stringify({
       version: 2,
       label,
